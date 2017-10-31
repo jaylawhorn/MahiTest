@@ -105,6 +105,7 @@ TupleMaker::TupleMaker(const edm::ParameterSet& iConfig)
 
    token_ChannelInfo_ = consumes<HBHEChannelInfoCollection>(edm::InputTag("hbheprereco",""));
    token_RecHit_ = consumes<HBHERecHitCollection>(edm::InputTag("hbheprereco",""));
+   //token_RecHit_ = consumes<HBHERecHitCollection>(edm::InputTag("hbhereco",""));
 
 }
 
