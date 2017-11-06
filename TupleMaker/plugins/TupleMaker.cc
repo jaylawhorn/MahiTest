@@ -24,11 +24,29 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
+#include "FWCore/Framework/interface/ESHandle.h"
+
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/HcalRecHit/interface/HBHERecHit.h"
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
+
+#include "Geometry/HcalCommonData/interface/HcalHitRelabeller.h"
+
+#include "CalibFormats/HcalObjects/interface/HcalCoderDb.h"
+#include "CalibFormats/HcalObjects/interface/HcalCalibrations.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbService.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbRecord.h"
+#include "CalibCalorimetry/HcalAlgos/interface/HcalPulseShapes.h"
+
+#include "Geometry/CaloTopology/interface/HcalTopology.h"
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+
+#include "SimDataFormats/CaloHit/interface/PCaloHit.h"
+#include "SimDataFormats/CaloHit/interface/PCaloHitContainer.h"
+#include "SimCalorimetry/HcalSimAlgos/interface/HcalSimParameterMap.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -66,11 +84,18 @@ class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       virtual void endJob() override;
 
       // ----------member data ---------------------------
+
+  std::map<int, double> hitEnergySumMap_;
+  HcalSimParameterMap simParameterMap_;
   
   edm::EDGetTokenT<HBHEChannelInfoCollection> token_ChannelInfo_;
   edm::EDGetTokenT<HBHERecHitCollection> token_RecHit_;
+  edm::EDGetTokenT<edm::PCaloHitContainer> tok_hbhe_sim_;
 
   edm::Service<TFileService> FileService;
+
+  const HcalDDDRecConstants *hcons;
+  const CaloGeometry *Geometry;
 
   TTree *outTree;
 
@@ -82,6 +107,7 @@ class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   double m2E;
   double m2X;
   double m3E;
+  double simE;
 
 };
 
@@ -105,6 +131,7 @@ TupleMaker::TupleMaker(const edm::ParameterSet& iConfig)
 
    token_ChannelInfo_ = consumes<HBHEChannelInfoCollection>(edm::InputTag("hbheprereco",""));
    token_RecHit_ = consumes<HBHERecHitCollection>(edm::InputTag("hbheprereco",""));
+   tok_hbhe_sim_ = consumes<edm::PCaloHitContainer>(edm::InputTag("g4SimHits","HcalHits"));
    //token_RecHit_ = consumes<HBHERecHitCollection>(edm::InputTag("hbhereco",""));
 
 }
@@ -129,11 +156,25 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
+   ESHandle<HcalDDDRecConstants> pHRNDC;
+   iSetup.get<HcalRecNumberingRecord>().get( pHRNDC );
+   hcons = &(*pHRNDC);
+
    Handle<HBHEChannelInfoCollection> hChannelInfo;
    iEvent.getByToken(token_ChannelInfo_, hChannelInfo);
 
    Handle<HBHERecHitCollection> hRecHit;
    iEvent.getByToken(token_RecHit_, hRecHit);
+
+   Handle<PCaloHitContainer> hSimHits;
+   iEvent.getByToken(tok_hbhe_sim_,hSimHits);
+
+   ESHandle<HcalDbService> hConditions;
+   iSetup.get<HcalDbRecord>().get(hConditions);
+
+   ESHandle<CaloGeometry> hGeometry;
+   iSetup.get<CaloGeometryRecord>().get(hGeometry);
+   Geometry = hGeometry.product();
 
    //std::cout << "-----" << std::endl;
    //std::cout << hRecHit->size() << std::endl;
@@ -143,7 +184,7 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      const HcalDetId detid =rh.id();
      //std::cout << rh.energy() << std::endl;
 
-     if (rh.eaux()<1) continue;
+     //if (rh.eaux()<1) continue;
 
      ieta=detid.ieta();
      iphi=detid.iphi();
@@ -156,6 +197,26 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      m2X=rh.chi2();
 
      m3E=rh.eraw();
+
+     simE=0;
+
+     if (!iEvent.isRealData()) {
+       double SamplingFactor = 1;
+       if(detid.subdet() == HcalBarrel) {
+	 SamplingFactor = simParameterMap_.hbParameters().samplingFactor(detid);
+       } else if (detid.subdet() == HcalEndcap) {
+	 SamplingFactor = simParameterMap_.heParameters().samplingFactor(detid);
+       }
+
+       for (int j = 0; j < (int) hSimHits->size(); j++) {
+
+	 HcalDetId simId = HcalHitRelabeller::relabel((*hSimHits)[j].id(), hcons);
+	    
+	 if (simId == detid) {
+	   simE+=SamplingFactor*((*hSimHits)[j].energy());
+	 }
+       }
+     }
 
      outTree->Fill();
 
@@ -211,6 +272,8 @@ TupleMaker::beginJob()
   outTree->Branch("m2X",&m2X,"m2X/D");
 
   outTree->Branch("m3E",&m3E,"m3E/D");
+
+  outTree->Branch("simE",&simE,"simE/D");
 
 
 }
