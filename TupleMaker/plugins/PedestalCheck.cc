@@ -70,10 +70,10 @@
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
-class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class PedestalCheck : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
    public:
-      explicit TupleMaker(const edm::ParameterSet&);
-      ~TupleMaker();
+      explicit PedestalCheck(const edm::ParameterSet&);
+      ~PedestalCheck();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -89,25 +89,17 @@ class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   HcalSimParameterMap simParameterMap_;
   
   edm::EDGetTokenT<HBHEChannelInfoCollection> token_ChannelInfo_;
-  edm::EDGetTokenT<HBHERecHitCollection> token_RecHit_;
-  edm::EDGetTokenT<edm::PCaloHitContainer> tok_hbhe_sim_;
 
   edm::Service<TFileService> FileService;
-
-  const HcalDDDRecConstants *hcons;
-  const CaloGeometry *Geometry;
 
   TTree *outTree;
 
   int ieta;
   int iphi;
   int depth;
-  double mahiE;
-  double mahiX;
-  double m2E;
-  double m2X;
-  double m3E;
-  double simE;
+  int capID;
+  double ts0;
+  double ped0;
 
 };
 
@@ -123,21 +115,18 @@ class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constructors and destructor
 //
-TupleMaker::TupleMaker(const edm::ParameterSet& iConfig)
+PedestalCheck::PedestalCheck(const edm::ParameterSet& iConfig)
 
 {
    //now do what ever initialization is needed
    usesResource("TFileService");
 
    token_ChannelInfo_ = consumes<HBHEChannelInfoCollection>(edm::InputTag("hbheprereco",""));
-   token_RecHit_ = consumes<HBHERecHitCollection>(edm::InputTag("hbheprereco",""));
-   tok_hbhe_sim_ = consumes<edm::PCaloHitContainer>(edm::InputTag("g4SimHits","HcalHits"));
-   //token_RecHit_ = consumes<HBHERecHitCollection>(edm::InputTag("hbhereco",""));
 
 }
 
 
-TupleMaker::~TupleMaker()
+PedestalCheck::~PedestalCheck()
 {
  
    // do anything here that needs to be done at desctruction time
@@ -152,142 +141,55 @@ TupleMaker::~TupleMaker()
 
 // ------------ method called for each event  ------------
 void
-TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+PedestalCheck::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-
-   ESHandle<HcalDDDRecConstants> pHRNDC;
-   iSetup.get<HcalRecNumberingRecord>().get( pHRNDC );
-   hcons = &(*pHRNDC);
 
    Handle<HBHEChannelInfoCollection> hChannelInfo;
    iEvent.getByToken(token_ChannelInfo_, hChannelInfo);
 
-   Handle<HBHERecHitCollection> hRecHit;
-   iEvent.getByToken(token_RecHit_, hRecHit);
-
-   Handle<PCaloHitContainer> hSimHits;
-   iEvent.getByToken(tok_hbhe_sim_,hSimHits);
-
-   ESHandle<HcalDbService> hConditions;
-   iSetup.get<HcalDbRecord>().get(hConditions);
-
-   ESHandle<CaloGeometry> hGeometry;
-   iSetup.get<CaloGeometryRecord>().get(hGeometry);
-   Geometry = hGeometry.product();
-
-   //std::cout << "-----" << std::endl;
-   //std::cout << hRecHit->size() << std::endl;
-
-   for (HBHERecHitCollection::const_iterator iter = hRecHit->begin(); iter!=hRecHit->end(); iter++) {
-     const HBHERecHit& rh(*iter);
-     const HcalDetId detid =rh.id();
-     //std::cout << rh.energy() << std::endl;
-
-     //if (rh.eaux()<1) continue;
-
+   for (HBHEChannelInfoCollection::const_iterator iter = hChannelInfo->begin(); iter!=hChannelInfo->end(); iter++) {
+     const HBHEChannelInfo& chi(*iter);
+     const HcalDetId detid =chi.id();
+     
      ieta=detid.ieta();
      iphi=detid.iphi();
      depth=detid.depth();
-
-     mahiE=rh.energy();
-     mahiX=rh.time();
-
-     m2E=rh.eaux();
-     m2X=rh.chi2();
-
-     m3E=rh.eraw();
-
-     simE=0;
-
-     if (!iEvent.isRealData()) {
-       double SamplingFactor = 1;
-       if (ieta>15 && ieta<30 && iphi>62 && iphi<67 && depth==1) SamplingFactor=1.5;
-       if(detid.subdet() == HcalBarrel) {
-	 SamplingFactor = simParameterMap_.hbParameters().samplingFactor(detid);
-       } else if (detid.subdet() == HcalEndcap) {
-	 SamplingFactor = simParameterMap_.heParameters().samplingFactor(detid);
-       }
-
-       for (int j = 0; j < (int) hSimHits->size(); j++) {
-
-	 HcalDetId simId = HcalHitRelabeller::relabel((*hSimHits)[j].id(), hcons);
-	    
-	 if (simId == detid) {
-	   simE+=SamplingFactor*((*hSimHits)[j].energy());
-	 }
-       }
-     }
-
+     capID=chi.capid();
+     ts0=chi.tsRawCharge(0);
+     ped0=chi.tsPedestal(0);
      outTree->Fill();
-
    }
-
-  //int ieta;
-  //int iphi;
-  //int depth;
-  //double mahiE;
-  //double mahiX;
-  //double m2E;
-  //double m2X;
-  //double m3E;
-
-
-   //Yeah, such a hack                                                                
-   //float tdcTime = info.soiRiseTime();
-   //if (!HcalSpecialTimes::isSpecial(tdcTime))
-   //  tdcTime += timeShift_;
-   //rh = HBHERecHit(channelId, m10E, chi2_mahi, tdcTime);
-   //rh.setRawEnergy(m3E);
-   //rh.setAuxEnergy(m2E);
-   //rh.setChiSquared(chi2);
 
 }
 
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-TupleMaker::beginJob()
+PedestalCheck::beginJob()
 {
-
-  //int ieta;
-  //int iphi;
-  //int depth;
-  //double mahiE;
-  //double mahiX;
-  //double m2E;
-  //double m2X;
-  //double m3E;
-
 
   outTree = FileService->make<TTree>("HcalTree","HcalTree");
 
   outTree->Branch("ieta",&ieta,"ieta/I");
   outTree->Branch("iphi",&iphi,"iphi/I");
   outTree->Branch("depth",&depth,"depth/I");
+  outTree->Branch("capID",&capID,"capID/I");
 
-  outTree->Branch("mahiE",&mahiE,"mahiE/D");
-  outTree->Branch("mahiX",&mahiX,"mahiX/D");
-
-  outTree->Branch("m2E",&m2E,"m2E/D");
-  outTree->Branch("m2X",&m2X,"m2X/D");
-
-  outTree->Branch("m3E",&m3E,"m3E/D");
-
-  outTree->Branch("simE",&simE,"simE/D");
-
+  outTree->Branch("ts0",&ts0,"ts0/D");
+  outTree->Branch("ped0",&ped0,"ped0/D");
 
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-TupleMaker::endJob() 
+PedestalCheck::endJob() 
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-TupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+PedestalCheck::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -296,4 +198,4 @@ TupleMaker::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(TupleMaker);
+DEFINE_FWK_MODULE(PedestalCheck);
