@@ -100,6 +100,8 @@ class PedestalCheck : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   int capID;
   double ts0;
   double ped0;
+  double ts1;
+  double ped1;
 
 };
 
@@ -158,6 +160,8 @@ PedestalCheck::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      capID=chi.capid();
      ts0=chi.tsRawCharge(0);
      ped0=chi.tsPedestal(0);
+     ts1=chi.tsRawCharge(1);
+     ped1=chi.tsPedestal(1);
      outTree->Fill();
    }
 
@@ -178,6 +182,9 @@ PedestalCheck::beginJob()
 
   outTree->Branch("ts0",&ts0,"ts0/D");
   outTree->Branch("ped0",&ped0,"ped0/D");
+
+  outTree->Branch("ts1",&ts1,"ts1/D");
+  outTree->Branch("ped1",&ped1,"ped1/D");
 
 }
 
