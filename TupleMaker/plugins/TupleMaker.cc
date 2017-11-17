@@ -183,18 +183,18 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      const HBHERecHit& rh(*iter);
      const HcalDetId detid =rh.id();
      //std::cout << rh.energy() << std::endl;
-
-     //if (rh.eaux()<1) continue;
+     
+     if (rh.eaux()<1) continue;
 
      ieta=detid.ieta();
      iphi=detid.iphi();
      depth=detid.depth();
 
      mahiE=rh.energy();
-     mahiX=rh.time();
+     mahiX=rh.chi2();
 
      m2E=rh.eaux();
-     m2X=rh.chi2();
+     m2X=0.0;
 
      m3E=rh.eraw();
 

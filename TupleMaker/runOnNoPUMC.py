@@ -37,7 +37,7 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'file:/eos/cms/store/user/jlawhorn/0212CDF1-919D-E711-AECD-B8CA3A70A5E8.root'
         #'file:noPUtest.root'
-        'file:TESTMC.root'
+        'file:/eos/cms/store/user/jlawhorn/TESTMC.root'
         ),
 
     inputCommands = cms.untracked.vstring('keep *', 
