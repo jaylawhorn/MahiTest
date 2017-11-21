@@ -108,6 +108,9 @@ class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   double m2X;
   double m3E;
   double simE;
+  double mahiSimR;
+  double m2SimR;
+  double m3SimR;
 
 };
 
@@ -199,6 +202,9 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      m3E=rh.eraw();
 
      simE=0;
+     mahiSimR=-1;
+     m2SimR=-1;
+     m3SimR=-1;
 
      if (!iEvent.isRealData()) {
        double SamplingFactor = 1;
@@ -216,7 +222,13 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   simE+=SamplingFactor*((*hSimHits)[j].energy());
 	 }
        }
+       if (simE!=0) {
+	 mahiSimR=mahiE/simE;
+	 m2SimR=m2E/simE;
+	 m3SimR=m3E/simE;
+       }
      }
+
 
      outTree->Fill();
 
@@ -274,6 +286,9 @@ TupleMaker::beginJob()
   outTree->Branch("m3E",&m3E,"m3E/D");
 
   outTree->Branch("simE",&simE,"simE/D");
+  outTree->Branch("mahiSimR",&mahiSimR,"mahiSimR/D");
+  outTree->Branch("m2SimR",&m2SimR,"m2SimR/D");
+  outTree->Branch("m3SimR",&m3SimR,"m3SimR/D");
 
 
 }
