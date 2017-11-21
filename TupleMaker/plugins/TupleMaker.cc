@@ -191,10 +191,10 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      depth=detid.depth();
 
      mahiE=rh.energy();
-     mahiX=rh.chi2();
+     mahiX=rh.time();
 
      m2E=rh.eaux();
-     m2X=0.0;
+     m2X=rh.chi2();
 
      m3E=rh.eraw();
 
@@ -202,13 +202,12 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
      if (!iEvent.isRealData()) {
        double SamplingFactor = 1;
-       if (ieta>15 && ieta<30 && iphi>62 && iphi<67 && depth==1) SamplingFactor=1.5;
        if(detid.subdet() == HcalBarrel) {
 	 SamplingFactor = simParameterMap_.hbParameters().samplingFactor(detid);
        } else if (detid.subdet() == HcalEndcap) {
 	 SamplingFactor = simParameterMap_.heParameters().samplingFactor(detid);
        }
-
+       if (ieta>15 && ieta<30 && iphi>62 && iphi<67 && depth==1) SamplingFactor*=1.5;
        for (int j = 0; j < (int) hSimHits->size(); j++) {
 
 	 HcalDetId simId = HcalHitRelabeller::relabel((*hSimHits)[j].id(), hcons);
