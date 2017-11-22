@@ -28,7 +28,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(1000)
 )
 
 # Input source
@@ -144,7 +144,7 @@ process.TFileService = cms.Service(
 # Schedule definition
 process.schedule = cms.Schedule(process.digitisation_step,process.L1simulation_step,process.digi2raw_step,#)
                                 process.reconstruction_step,
-                                process.flat_step, process.endjob_step)
+                                process.flat_step, process.endjob_step, process.FEVTDEBUGHLToutput_step)
 #process.schedule.extend([process.endjob_step,process.FEVTDEBUGHLToutput_step])
 
 #Setup FWK for multithreaded

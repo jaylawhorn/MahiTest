@@ -58,7 +58,7 @@
 
 #include "TTree.h"
 #include "TFile.h"
-
+#include "TH1D.h"
 
 //
 // class declaration
@@ -103,6 +103,7 @@ class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   int iphi;
   int depth;
   double mahiE;
+  double mahiT;
   double mahiX;
   double m2E;
   double m2X;
@@ -111,6 +112,12 @@ class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   double mahiSimR;
   double m2SimR;
   double m3SimR;
+
+  TH1D *hMahiSimR;
+  TH1D *hM2SimR;
+  TH1D *hM3SimR;
+  TH1D *hMahiM2R;
+  TH1D *hNiters;
 
 };
 
@@ -194,7 +201,10 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      depth=detid.depth();
 
      mahiE=rh.energy();
-     mahiX=rh.time();
+     mahiT=rh.time();
+     mahiX=rh.timeFalling();
+
+     hNiters->Fill(int(mahiT)%1000);
 
      m2E=rh.eaux();
      m2X=rh.chi2();
@@ -224,11 +234,16 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        }
        if (simE!=0) {
 	 mahiSimR=mahiE/simE;
+	 hMahiSimR->Fill(mahiSimR);
 	 m2SimR=m2E/simE;
+	 hM2SimR->Fill(m2SimR);
 	 m3SimR=m3E/simE;
+	 hM3SimR->Fill(m3SimR);
        }
      }
-
+     if (m2E!=0) {
+       hMahiM2R->Fill(mahiE/m2E);
+     }
 
      outTree->Fill();
 
@@ -270,6 +285,21 @@ TupleMaker::beginJob()
   //double m2X;
   //double m3E;
 
+
+   //TH2D *hMahiSimR;
+   //TH2D *hM2SimR;
+   //TH2D *hM3SimR;
+   //TH2D *hMahiM2R;
+
+  hMahiSimR = FileService->make<TH1D>("hMahiSimR", "", 100, 0, 2);
+  hMahiSimR->SetLineColor(kBlack);
+  hM2SimR   = FileService->make<TH1D>("hM2SimR", "",   100, 0, 2);
+  hM2SimR->SetLineColor(kBlue);
+  hM3SimR   = FileService->make<TH1D>("hM3SimR", "",   100, 0, 2);
+  hM3SimR->SetLineColor(kRed);
+  hMahiM2R  = FileService->make<TH1D>("hMahiM2R", "",  100, 0, 2);
+
+  hNiters = FileService->make<TH1D>("hNiters","", 51, 0, 510);
 
   outTree = FileService->make<TTree>("HcalTree","HcalTree");
 

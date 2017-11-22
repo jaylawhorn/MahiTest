@@ -28,7 +28,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 # Input source
@@ -37,7 +37,7 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'file:/eos/cms/store/user/jlawhorn/0212CDF1-919D-E711-AECD-B8CA3A70A5E8.root'
         #'file:noPUtest.root'
-        'file:/eos/cms/store/user/jlawhorn/TESTMC.root'
+        'file:TESTMC.root'
         ),
 
     inputCommands = cms.untracked.vstring('keep *', 
@@ -79,8 +79,8 @@ process.hcalLocalRecoSequence.remove(process.zdcreco)
 process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
-process.hbheprereco.processQIE11 = cms.bool(True)
-process.hbheprereco.processQIE8 = cms.bool(False)
+process.hbheprereco.processQIE11 = cms.bool(False)
+process.hbheprereco.processQIE8 = cms.bool(True)
 process.hbheprereco.digiLabelQIE8 = cms.InputTag("simHcalDigis")
 process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis","HBHEQIE11DigiCollection")
 process.hbheprereco.saveInfos = cms.bool(True)
