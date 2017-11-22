@@ -14,6 +14,8 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.categories.append('FastReport')
+process.MessageLogger.cerr.FastReport = cms.untracked.PSet( limit = cms.untracked.int32(10000000) )
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
@@ -79,10 +81,31 @@ process.hcalLocalRecoSequence.remove(process.zdcreco)
 process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
+
+
+
+
 process.hbheprereco.processQIE11 = cms.bool(False)
 process.hbheprereco.processQIE8 = cms.bool(True)
 process.hbheprereco.digiLabelQIE8 = cms.InputTag("simHcalDigis")
 process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis","HBHEQIE11DigiCollection")
+
+
+process.mahi = process.hbheprereco.clone()
+process.mahi.algorithm.useM2=cms.bool(False)
+process.mahi.algorithm.useM3=cms.bool(False)
+process.mahi.algorithm.useMahi=cms.bool(True)
+
+process.met2 = process.hbheprereco.clone()
+process.met2.algorithm.useM2=cms.bool(True)
+process.met2.algorithm.useM3=cms.bool(False)
+process.met2.algorithm.useMahi=cms.bool(False)
+
+process.met3 = process.hbheprereco.clone()
+process.met3.algorithm.useM2=cms.bool(False)
+process.met3.algorithm.useM3=cms.bool(True)
+process.met3.algorithm.useMahi=cms.bool(False)
+
 process.hbheprereco.saveInfos = cms.bool(True)
 
 
@@ -98,6 +121,12 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '
 #process.digi2raw_step = cms.Path(process.DigiToRaw)
 process.raw2digi_step = cms.Path(process.hcalDigis)
 process.reconstruction_step = cms.Path(process.hcalLocalRecoSequence+process.hbheplan1)
+
+process.m2_step = cms.Path(process.met2)
+process.m3_step = cms.Path(process.met3)
+process.mahi_step = cms.Path(process.mahi)
+
+
 process.endjob_step = cms.EndPath(process.endOfProcess)
 #process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
@@ -115,7 +144,9 @@ process.TFileService = cms.Service(
 # Schedule definition
 process.schedule = cms.Schedule(#process.digitisation_step,process.L1simulation_step,process.digi2raw_step,#)
                                 process.reconstruction_step,
-                                process.flat_step, process.endjob_step)
+                                process.flat_step, 
+                                process.m2_step, process.m3_step, process.mahi_step,
+                                process.endjob_step)
 #process.schedule.extend([process.endjob_step,process.FEVTDEBUGHLToutput_step])
 
 #Setup FWK for multithreaded
@@ -150,3 +181,8 @@ process = customiseEarlyDelete(process)
 dumpFile  = open("DumpRECO_Phase1_step2_GT.py", "w")
 dumpFile.write(process.dumpPython())
 dumpFile.close()
+
+if 'FastTimerService' in process.__dict__:
+    del process.FastTimerService
+
+process.load("HLTrigger.Timer.FastTimerService_cfi")
