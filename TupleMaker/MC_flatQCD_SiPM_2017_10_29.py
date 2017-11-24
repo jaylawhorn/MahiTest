@@ -12,6 +12,8 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.categories.append('FastReport')
+process.MessageLogger.cerr.FastReport = cms.untracked.PSet( limit = cms.untracked.int32(10000000) )
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
@@ -21,36 +23,36 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/04EE54D5-1BBB-E711-8309-0CC47A4C8EC6.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/068DAFCA-1BBB-E711-9CB8-0025905B85F6.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/122386D4-1BBB-E711-8C95-0CC47A78A340.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/12DEE3E9-1FBB-E711-B1FD-0CC47A4C8E64.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/18ACF066-1CBB-E711-A1E3-0CC47A78A408.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/1E518EE6-1CBB-E711-B652-0025905A60A0.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/2042E3D1-1BBB-E711-8006-0CC47A745298.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/2049D5E6-1CBB-E711-B03B-0CC47A78A340.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/2C7ADDCA-1BBB-E711-9CD4-0025905B8568.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/30872D69-1CBB-E711-A334-0CC47A7C34D0.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/3090D954-1CBB-E711-9468-0CC47A78A2EC.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/3258D0F2-1CBB-E711-878E-0CC47A4C8EC6.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/38095F5D-1CBB-E711-BC0C-0025905B85BC.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/428FB25B-1CBB-E711-8C3B-0CC47A74527A.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/42C961D7-1BBB-E711-B166-0CC47A7C345C.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/4E394DD4-1BBB-E711-8187-0CC47A78A3F8.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/562DA7D8-1BBB-E711-875F-0CC47A7C35F8.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/5AB0A2D3-1BBB-E711-AF30-0CC47A7C3424.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/5CFEC7E4-1CBB-E711-B402-0025905B85AA.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/6069985F-1CBB-E711-9775-0CC47A4D7662.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/621A53E2-1CBB-E711-8E91-0025905B8582.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/6A747950-1CBB-E711-82B9-0025905A60CE.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/78A606CA-1BBB-E711-8307-0025905B8596.root",
-"file:/eos/cms/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/80BBB8BE-1BBB-E711-BD2D-0CC47A7C35A8.root"
+#"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/04EE54D5-1BBB-E711-8309-0CC47A4C8EC6.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/068DAFCA-1BBB-E711-9CB8-0025905B85F6.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/122386D4-1BBB-E711-8C95-0CC47A78A340.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/12DEE3E9-1FBB-E711-B1FD-0CC47A4C8E64.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/18ACF066-1CBB-E711-A1E3-0CC47A78A408.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/1E518EE6-1CBB-E711-B652-0025905A60A0.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/2042E3D1-1BBB-E711-8006-0CC47A745298.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/2049D5E6-1CBB-E711-B03B-0CC47A78A340.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/2C7ADDCA-1BBB-E711-9CD4-0025905B8568.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/30872D69-1CBB-E711-A334-0CC47A7C34D0.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/3090D954-1CBB-E711-9468-0CC47A78A2EC.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/3258D0F2-1CBB-E711-878E-0CC47A4C8EC6.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/38095F5D-1CBB-E711-BC0C-0025905B85BC.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/428FB25B-1CBB-E711-8C3B-0CC47A74527A.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/42C961D7-1BBB-E711-B166-0CC47A7C345C.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/4E394DD4-1BBB-E711-8187-0CC47A78A3F8.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/562DA7D8-1BBB-E711-875F-0CC47A7C35F8.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/5AB0A2D3-1BBB-E711-AF30-0CC47A7C3424.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/5CFEC7E4-1CBB-E711-B402-0025905B85AA.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/6069985F-1CBB-E711-9775-0CC47A4D7662.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/621A53E2-1CBB-E711-8E91-0025905B8582.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/6A747950-1CBB-E711-82B9-0025905A60CE.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/78A606CA-1BBB-E711-8307-0025905B8596.root",
+"/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/80BBB8BE-1BBB-E711-BD2D-0CC47A7C35A8.root"
         ),
                             secondaryFileNames = cms.untracked.vstring()
                             )
@@ -90,10 +92,31 @@ process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 process.hcalDigis.UnpackZDC = cms.untracked.bool(False)
 
 process.hcalLocalRecoSequence.remove(process.zdcreco)
+process.hcalLocalRecoSequence.remove(process.hfprereco)
+process.hcalLocalRecoSequence.remove(process.horeco)
+process.hcalLocalRecoSequence.remove(process.hfreco)
+
 process.hbheprereco.processQIE11 = cms.bool(True)
 process.hbheprereco.processQIE8 = cms.bool(False)
 process.hbheprereco.digiLabelQIE8 = cms.InputTag("simHcalDigis")
 process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis","HBHEQIE11DigiCollection")
+
+process.mahi = process.hbheprereco.clone()
+process.mahi.algorithm.useM2=cms.bool(False)
+process.mahi.algorithm.useM3=cms.bool(False)
+process.mahi.algorithm.useMahi=cms.bool(True)
+
+process.met2 = process.hbheprereco.clone()
+process.met2.algorithm.useM2=cms.bool(True)
+process.met2.algorithm.useM3=cms.bool(False)
+process.met2.algorithm.useMahi=cms.bool(False)
+
+process.met3 = process.hbheprereco.clone()
+process.met3.algorithm.useM2=cms.bool(False)
+process.met3.algorithm.useM3=cms.bool(True)
+process.met3.algorithm.useMahi=cms.bool(False)
+
+process.hbheprereco.saveInfos = cms.bool(True)
 
 process.load("RecoLocalCalo.HcalRecProducers.hbheplan1_cfi") #import hbheplan1
 
@@ -115,14 +138,23 @@ process.TFileService = cms.Service(
 
 process.flat_step = cms.Path(process.flat)
 
+process.m2_step = cms.Path(process.met2)
+process.m3_step = cms.Path(process.met3)
+process.mahi_step = cms.Path(process.mahi)
+
 
 # Schedule definition
 process.schedule = cms.Schedule(process.raw2digi_step,
                                 process.reconstruction_step,
                                 #process.dump_step,
                                 process.flat_step,
+                                process.m2_step, process.m3_step, process.mahi_step,
                                 process.endjob_step)
 #process.FEVTDEBUGoutput_step)
 
 #from Configuration.DataProcessing.Utils import addMonitoring
 #process = addMonitoring(process)
+if 'FastTimerService' in process.__dict__:
+    del process.FastTimerService
+
+process.load("HLTrigger.Timer.FastTimerService_cfi")
