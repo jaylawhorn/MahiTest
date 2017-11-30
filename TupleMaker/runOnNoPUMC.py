@@ -30,7 +30,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(5000)
 )
 
 # Input source
@@ -39,7 +39,7 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'file:/eos/cms/store/user/jlawhorn/0212CDF1-919D-E711-AECD-B8CA3A70A5E8.root'
         #'file:noPUtest.root'
-        'file:TESTMC.root'
+        'file:/afs/cern.ch/work/j/jlawhorn/public/TESTMC.root'
         ),
 
     inputCommands = cms.untracked.vstring('keep *', 
@@ -82,11 +82,10 @@ process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
 
+process.hbheprereco.algorithm.activeBXs=cms.vint32(0)
 
-
-
-process.hbheprereco.processQIE11 = cms.bool(False)
-process.hbheprereco.processQIE8 = cms.bool(True)
+process.hbheprereco.processQIE11 = cms.bool(True)
+process.hbheprereco.processQIE8 = cms.bool(False)
 process.hbheprereco.digiLabelQIE8 = cms.InputTag("simHcalDigis")
 process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis","HBHEQIE11DigiCollection")
 
@@ -115,6 +114,21 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')
 ##process.GlobalTag = GlobalTag(process.GlobalTag, '81X_upgrade2017_realistic_v25', '')
 
+process.load("CondCore.DBCommon.CondDBSetup_cfi")
+process.es_pool = cms.ESSource("PoolDBESSource",
+                               process.CondDBSetup,
+                               timetype = cms.string('runnumber'),
+                               toGet = cms.VPSet(
+    cms.PSet(record = cms.string("HcalRecoParamsRcd"),
+    tag = cms.string("HcalRecoParams_HEP17shape205")
+    )
+  ),
+  connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+  authenticationMethod = cms.untracked.uint32(0)
+)
+process.es_prefer_es_pool = cms.ESPrefer( "PoolDBESSource", "es_pool" )
+
+
 # Path and EndPath definitions
 #process.digitisation_step = cms.Path(process.pdigi_valid)
 #process.L1simulation_step = cms.Path(process.SimL1Emulator)
@@ -137,7 +151,7 @@ process.flat_step = cms.Path(process.flat)
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("testOut.root")
+    fileName = cms.string("MC_noPU_SiPM_205.root")
     )
 
 
@@ -145,7 +159,7 @@ process.TFileService = cms.Service(
 process.schedule = cms.Schedule(#process.digitisation_step,process.L1simulation_step,process.digi2raw_step,#)
                                 process.reconstruction_step,
                                 process.flat_step, 
-                                process.m2_step, process.m3_step, process.mahi_step,
+                                #process.m2_step, process.m3_step, process.mahi_step,
                                 process.endjob_step)
 #process.schedule.extend([process.endjob_step,process.FEVTDEBUGHLToutput_step])
 

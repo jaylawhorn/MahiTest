@@ -23,23 +23,13 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(5000)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/62439AF2-78BB-E711-8066-02163E019CC0.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/72EB8201-79BB-E711-A53A-02163E01A2F5.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7A064FEE-83BB-E711-9573-02163E013645.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7AB1CE24-87BB-E711-9544-02163E01A5E6.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/9A6CF309-84BB-E711-A738-02163E01A1EF.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/A206AA3C-85BB-E711-972C-02163E0139B8.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/BE1E948E-88BB-E711-AD99-02163E01A6F2.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/DE6CDE38-8ABB-E711-96A8-02163E01344D.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E001CFB7-88BB-E711-9408-02163E0143F6.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E444E08D-82BB-E711-83CE-02163E0146E6.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E63BA5A2-82BB-E711-A248-02163E01A6E2.root"
+        "file:/eos/cms/store/user/jlawhorn/Run2017A_ZeroBias_296642_F8A3EC07.root"
         ),
                             secondaryFileNames = cms.untracked.vstring()
                             )
@@ -82,6 +72,8 @@ process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
 
+process.hbheprereco.algorithm.activeBXs=cms.vint32(-1,0,1)
+
 process.hbheprereco.processQIE11 = cms.bool(False)
 process.hbheprereco.processQIE8 = cms.bool(True)
 
@@ -118,7 +110,7 @@ process.flat = cms.EDAnalyzer('TupleMaker')
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("Data_305809_htmht_HPD_2017_10_29.root")
+    fileName = cms.string("Data_296642_zerobias_HPD_3p.root")
     )
 
 process.flat_step = cms.Path(process.flat)

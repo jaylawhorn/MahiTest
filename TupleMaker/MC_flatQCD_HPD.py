@@ -11,7 +11,7 @@ process = cms.Process('RECO')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.categories.append('FastReport')
 process.MessageLogger.cerr.FastReport = cms.untracked.PSet( limit = cms.untracked.int32(10000000) )
 process.load('Configuration.EventContent.EventContent_cff')
@@ -23,23 +23,22 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(5000)
+    input = cms.untracked.int32(1000)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/62439AF2-78BB-E711-8066-02163E019CC0.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/72EB8201-79BB-E711-A53A-02163E01A2F5.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7A064FEE-83BB-E711-9573-02163E013645.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7AB1CE24-87BB-E711-9544-02163E01A5E6.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/9A6CF309-84BB-E711-A738-02163E01A1EF.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/A206AA3C-85BB-E711-972C-02163E0139B8.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/BE1E948E-88BB-E711-AD99-02163E01A6F2.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/DE6CDE38-8ABB-E711-96A8-02163E01344D.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E001CFB7-88BB-E711-9408-02163E0143F6.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E444E08D-82BB-E711-83CE-02163E0146E6.root",
-        "file:/eos/cms/tier0/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E63BA5A2-82BB-E711-A248-02163E01A6E2.root"
+        #"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/00F81697-AECB-E711-A8DB-0CC47A4D7600.root",
+        # "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/02270F3A-B0CB-E711-B800-003048FF9ABC.root",
+        # "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/02B2350A-B1CB-E711-9604-0025905A60D6.root",
+        # "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/08F493FF-B5CB-E711-AD3B-0025905B8576.root",
+         "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/0E64333A-B6CB-E711-8C67-0CC47A4C8EB6.root",
+         "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/12A31658-AECB-E711-9625-0CC47A7C3410.root",
+         "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/16A56D40-AFCB-E711-868A-0CC47A4D7666.root",
+         "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/1809A88C-AECB-E711-9C70-0CC47A78A2EC.root",
+         "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/2E7C28F9-B5CB-E711-B6FB-0025905B85EE.root",
+         "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/301D06C6-AECB-E711-979F-0CC47A4D769A.root"
         ),
                             secondaryFileNames = cms.untracked.vstring()
                             )
@@ -81,8 +80,10 @@ process.hcalLocalRecoSequence.remove(process.zdcreco)
 process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
-process.hbheprereco.processQIE11 = cms.bool(True)
-process.hbheprereco.processQIE8 = cms.bool(False)
+process.hbheprereco.processQIE11 = cms.bool(False)
+process.hbheprereco.processQIE8 = cms.bool(True)
+process.hbheprereco.digiLabelQIE8 = cms.InputTag("simHcalDigis")
+process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis")
 
 process.mahi = process.hbheprereco.clone()
 process.mahi.algorithm.useM2=cms.bool(False)
@@ -101,7 +102,6 @@ process.met3.algorithm.useMahi=cms.bool(False)
 
 process.hbheprereco.saveInfos = cms.bool(True)
 
-
 process.load("RecoLocalCalo.HcalRecProducers.hbheplan1_cfi") #import hbheplan1
 
 # Path and EndPath definitions
@@ -110,10 +110,6 @@ process.reconstruction_step = cms.Path(process.hcalLocalRecoSequence+process.hbh
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
-process.m2_step = cms.Path(process.met2)
-process.m3_step = cms.Path(process.met3)
-process.mahi_step = cms.Path(process.mahi)
-
 process.dump=cms.EDAnalyzer('EventContentAnalyzer')
 process.dump_step = cms.Path(process.dump)
 
@@ -121,11 +117,14 @@ process.flat = cms.EDAnalyzer('TupleMaker')
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("Data_305809_htmht_SiPM_2017_10_29.root")
-    #fileName = cms.string("temp.root")
+    fileName = cms.string("MC_flatQCD_HPD.root")
     )
 
 process.flat_step = cms.Path(process.flat)
+
+process.m2_step = cms.Path(process.met2)
+process.m3_step = cms.Path(process.met3)
+process.mahi_step = cms.Path(process.mahi)
 
 
 # Schedule definition
@@ -133,14 +132,14 @@ process.schedule = cms.Schedule(process.raw2digi_step,
                                 process.reconstruction_step,
                                 #process.dump_step,
                                 process.flat_step,
-                                process.m2_step, process.m3_step, process.mahi_step,
+                                #process.m2_step, process.m3_step, process.mahi_step,
                                 process.endjob_step)
 #process.FEVTDEBUGoutput_step)
 
 #from Configuration.DataProcessing.Utils import addMonitoring
 #process = addMonitoring(process)
+
 if 'FastTimerService' in process.__dict__:
     del process.FastTimerService
 
 process.load("HLTrigger.Timer.FastTimerService_cfi")
-

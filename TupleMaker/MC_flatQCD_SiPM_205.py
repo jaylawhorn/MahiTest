@@ -23,13 +23,22 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(5000)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-        "/store/relval/CMSSW_9_4_0_pre3/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v4-v1/10000/04EE54D5-1BBB-E711-8309-0CC47A4C8EC6.root"
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/00F81697-AECB-E711-A8DB-0CC47A4D7600.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/02270F3A-B0CB-E711-B800-003048FF9ABC.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/02B2350A-B1CB-E711-9604-0025905A60D6.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/08F493FF-B5CB-E711-AD3B-0025905B8576.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/0E64333A-B6CB-E711-8C67-0CC47A4C8EB6.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/12A31658-AECB-E711-9625-0CC47A7C3410.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/16A56D40-AFCB-E711-868A-0CC47A4D7666.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/1809A88C-AECB-E711-9C70-0CC47A78A2EC.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/2E7C28F9-B5CB-E711-B6FB-0025905B85EE.root",
+"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/301D06C6-AECB-E711-979F-0CC47A4D769A.root"
         ),
                             secondaryFileNames = cms.untracked.vstring()
                             )
@@ -61,7 +70,22 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '92X_dataRun2_Prompt_v9', '')
+#process.GlobalTag = GlobalTag(process.GlobalTag, '92X_dataRun2_Prompt_v9', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '92X_upgrade2017_realistic_v7', '')
+
+process.load("CondCore.DBCommon.CondDBSetup_cfi")
+process.es_pool = cms.ESSource("PoolDBESSource",
+                               process.CondDBSetup,
+                               timetype = cms.string('runnumber'),
+                               toGet = cms.VPSet(
+    cms.PSet(record = cms.string("HcalRecoParamsRcd"),
+    tag = cms.string("HcalRecoParams_HEP17shape205")
+    )
+  ),
+  connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
+  authenticationMethod = cms.untracked.uint32(0)
+)
+process.es_prefer_es_pool = cms.ESPrefer( "PoolDBESSource", "es_pool" )
 
 process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 
@@ -71,10 +95,13 @@ process.hcalLocalRecoSequence.remove(process.zdcreco)
 process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
-process.hbheprereco.processQIE11 = cms.bool(False)
-process.hbheprereco.processQIE8 = cms.bool(True)
+
+process.hbheprereco.algorithm.activeBXs=cms.vint32(-1,0,1)
+
+process.hbheprereco.processQIE11 = cms.bool(True)
+process.hbheprereco.processQIE8 = cms.bool(False)
 process.hbheprereco.digiLabelQIE8 = cms.InputTag("simHcalDigis")
-process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis")
+process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis","HBHEQIE11DigiCollection")
 
 process.mahi = process.hbheprereco.clone()
 process.mahi.algorithm.useM2=cms.bool(False)
@@ -108,7 +135,7 @@ process.flat = cms.EDAnalyzer('TupleMaker')
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("MC_flatQCD_HPD_2017_10_29.root")
+    fileName = cms.string("MC_flatQCD_SiPM_205.root")
     )
 
 process.flat_step = cms.Path(process.flat)
@@ -129,7 +156,6 @@ process.schedule = cms.Schedule(process.raw2digi_step,
 
 #from Configuration.DataProcessing.Utils import addMonitoring
 #process = addMonitoring(process)
-
 if 'FastTimerService' in process.__dict__:
     del process.FastTimerService
 

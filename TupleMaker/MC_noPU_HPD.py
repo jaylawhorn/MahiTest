@@ -7,21 +7,23 @@ import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
 
-process = cms.Process('RERECO',eras.Run2_2017)
+process = cms.Process('RERECOHARDER',eras.Run2_2017)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.categories.append('FastReport')
+process.MessageLogger.cerr.FastReport = cms.untracked.PSet( limit = cms.untracked.int32(10000000) )
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.GeometrySimDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('Configuration.StandardSequences.Digi_cff')
-process.load('Configuration.StandardSequences.SimL1Emulator_cff')
-process.load('Configuration.StandardSequences.DigiToRaw_cff')
+#process.load('Configuration.StandardSequences.Digi_cff')
+#process.load('Configuration.StandardSequences.SimL1Emulator_cff')
+#process.load('Configuration.StandardSequences.DigiToRaw_cff')
 process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
 #process.load('HLTrigger.Configuration.HLT_GRun_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
@@ -35,9 +37,10 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
     fileNames = cms.untracked.vstring(
-        'file:/eos/cms/store/user/jlawhorn/0212CDF1-919D-E711-AECD-B8CA3A70A5E8.root'
+        #'file:/eos/cms/store/user/jlawhorn/0212CDF1-919D-E711-AECD-B8CA3A70A5E8.root'
         #'file:noPUtest.root'
-    ),
+        'file:/afs/cern.ch/work/j/jlawhorn/public/TESTMC.root'
+        ),
 
     inputCommands = cms.untracked.vstring('keep *', 
         'drop *_genParticles_*_*', 
@@ -72,46 +75,36 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 
-process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
-        filterName = cms.untracked.string('')
-    ),
-    eventAutoFlushCompressedSize = cms.untracked.int32(10485760),
-    fileName = cms.untracked.string('file:/afs/cern.ch/work/j/jlawhorn/public/TESTMC.root'),
-    outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
-)
-
-# Additional output definition
-
-# Other statements
-process.mix.digitizers = cms.PSet(process.theDigitizersValid)
-
-## MARIA temporarily switch off the timeSlew and set the timePhase to the 0.5
-##process.mix.digitizers.hcal.doTimeSlew = cms.bool(False)
-##process.mix.digitizers.hcal.he.timePhase = cms.double(7.5)
-##process.mix.digitizers.hcal.hb.timePhase = cms.double(7.5)
-
-## MARIA temporarily switch off the noise
-#process.mix.digitizers.hcal.doNoise = cms.bool(False)
-
-## MARIA temporarily switch off the geantTime
-#process.mix.digitizers.hcal.ignoreGeantTime = cms.bool(True)
-
-##  MARIA temporarily switch off the photon statistics
-##process.mix.digitizers.hcal.he.doPhotoStatistics = cms.bool(False)
-
 process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 process.hcalDigis.UnpackZDC = cms.untracked.bool(False)
 process.hcalLocalRecoSequence.remove(process.zdcreco)
 process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
-process.hbheprereco.processQIE11 = cms.bool(True)
-process.hbheprereco.processQIE8 = cms.bool(False)
+
+process.hbheprereco.algorithm.activeBXs=cms.vint32(-1,0,1)
+
+process.hbheprereco.processQIE11 = cms.bool(False)
+process.hbheprereco.processQIE8 = cms.bool(True)
 process.hbheprereco.digiLabelQIE8 = cms.InputTag("simHcalDigis")
 process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis","HBHEQIE11DigiCollection")
+
+
+process.mahi = process.hbheprereco.clone()
+process.mahi.algorithm.useM2=cms.bool(False)
+process.mahi.algorithm.useM3=cms.bool(False)
+process.mahi.algorithm.useMahi=cms.bool(True)
+
+process.met2 = process.hbheprereco.clone()
+process.met2.algorithm.useM2=cms.bool(True)
+process.met2.algorithm.useM3=cms.bool(False)
+process.met2.algorithm.useMahi=cms.bool(False)
+
+process.met3 = process.hbheprereco.clone()
+process.met3.algorithm.useM2=cms.bool(False)
+process.met3.algorithm.useM3=cms.bool(True)
+process.met3.algorithm.useMahi=cms.bool(False)
+
 process.hbheprereco.saveInfos = cms.bool(True)
 
 
@@ -122,13 +115,19 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '
 ##process.GlobalTag = GlobalTag(process.GlobalTag, '81X_upgrade2017_realistic_v25', '')
 
 # Path and EndPath definitions
-process.digitisation_step = cms.Path(process.pdigi_valid)
-process.L1simulation_step = cms.Path(process.SimL1Emulator)
-process.digi2raw_step = cms.Path(process.DigiToRaw)
+#process.digitisation_step = cms.Path(process.pdigi_valid)
+#process.L1simulation_step = cms.Path(process.SimL1Emulator)
+#process.digi2raw_step = cms.Path(process.DigiToRaw)
 process.raw2digi_step = cms.Path(process.hcalDigis)
 process.reconstruction_step = cms.Path(process.hcalLocalRecoSequence+process.hbheplan1)
+
+process.m2_step = cms.Path(process.met2)
+process.m3_step = cms.Path(process.met3)
+process.mahi_step = cms.Path(process.mahi)
+
+
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
+#process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 process.flat = cms.EDAnalyzer('TupleMaker')
 #process.flat2 = cms.EDAnalyzer('PedestalCheck')
@@ -137,19 +136,21 @@ process.flat_step = cms.Path(process.flat)
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("noPU_MC_ped.root")
+    fileName = cms.string("MC_noPU_HPD_3p.root")
     )
 
 
 # Schedule definition
-process.schedule = cms.Schedule(process.digitisation_step,process.L1simulation_step,process.digi2raw_step,#)
+process.schedule = cms.Schedule(#process.digitisation_step,process.L1simulation_step,process.digi2raw_step,#)
                                 process.reconstruction_step,
-                                process.flat_step, process.endjob_step, process.FEVTDEBUGHLToutput_step)
+                                process.flat_step, 
+                                #process.m2_step, process.m3_step, process.mahi_step,
+                                process.endjob_step)
 #process.schedule.extend([process.endjob_step,process.FEVTDEBUGHLToutput_step])
 
 #Setup FWK for multithreaded
-process.options.numberOfThreads=cms.untracked.uint32(16)
-process.options.numberOfStreams=cms.untracked.uint32(0)
+#process.options.numberOfThreads=cms.untracked.uint32(16)
+#process.options.numberOfStreams=cms.untracked.uint32(0)
 
 # customisation of the process.
 
@@ -179,3 +180,8 @@ process = customiseEarlyDelete(process)
 dumpFile  = open("DumpRECO_Phase1_step2_GT.py", "w")
 dumpFile.write(process.dumpPython())
 dumpFile.close()
+
+if 'FastTimerService' in process.__dict__:
+    del process.FastTimerService
+
+process.load("HLTrigger.Timer.FastTimerService_cfi")
