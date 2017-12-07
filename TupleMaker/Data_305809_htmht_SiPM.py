@@ -23,12 +23,13 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(50)
+    input = cms.untracked.int32(-1)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
+        "file:/eos/cms/store/user/jlawhorn/Run2017F_HTMHT_305862_1ACCE666.root"
         #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/62439AF2-78BB-E711-8066-02163E019CC0.root",
         #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/72EB8201-79BB-E711-A53A-02163E01A2F5.root",
         #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7A064FEE-83BB-E711-9573-02163E013645.root",
@@ -37,9 +38,9 @@ process.source = cms.Source("PoolSource",
         #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/A206AA3C-85BB-E711-972C-02163E0139B8.root",
         #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/BE1E948E-88BB-E711-AD99-02163E01A6F2.root",
         #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/DE6CDE38-8ABB-E711-96A8-02163E01344D.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E001CFB7-88BB-E711-9408-02163E0143F6.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E444E08D-82BB-E711-83CE-02163E0146E6.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E63BA5A2-82BB-E711-A248-02163E01A6E2.root"
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E001CFB7-88BB-E711-9408-02163E0143F6.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E444E08D-82BB-E711-83CE-02163E0146E6.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E63BA5A2-82BB-E711-A248-02163E01A6E2.root"
         ),
                             secondaryFileNames = cms.untracked.vstring()
                             )
@@ -82,28 +83,12 @@ process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
 
+process.hbheprereco.algorithm.useM2=cms.bool(True)
+process.hbheprereco.algorithm.useM3=cms.bool(True)
+process.hbheprereco.algorithm.useMahi=cms.bool(True)
+
 process.hbheprereco.processQIE11 = cms.bool(True)
 process.hbheprereco.processQIE8 = cms.bool(False)
-
-process.hbheprereco.algorithm.activeBXs=cms.vint32(0)
-
-process.mahi = process.hbheprereco.clone()
-process.mahi.algorithm.useM2=cms.bool(False)
-process.mahi.algorithm.useM3=cms.bool(False)
-process.mahi.algorithm.useMahi=cms.bool(True)
-
-process.met2 = process.hbheprereco.clone()
-process.met2.algorithm.useM2=cms.bool(True)
-process.met2.algorithm.useM3=cms.bool(False)
-process.met2.algorithm.useMahi=cms.bool(False)
-
-process.met3 = process.hbheprereco.clone()
-process.met3.algorithm.useM2=cms.bool(False)
-process.met3.algorithm.useM3=cms.bool(True)
-process.met3.algorithm.useMahi=cms.bool(False)
-
-process.hbheprereco.saveInfos = cms.bool(True)
-
 
 process.load("RecoLocalCalo.HcalRecProducers.hbheplan1_cfi") #import hbheplan1
 
@@ -113,10 +98,6 @@ process.reconstruction_step = cms.Path(process.hcalLocalRecoSequence+process.hbh
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
-process.m2_step = cms.Path(process.met2)
-process.m3_step = cms.Path(process.met3)
-process.mahi_step = cms.Path(process.mahi)
-
 process.dump=cms.EDAnalyzer('EventContentAnalyzer')
 process.dump_step = cms.Path(process.dump)
 
@@ -124,8 +105,7 @@ process.flat = cms.EDAnalyzer('TupleMaker')
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("testtesttest.root")
-    #fileName = cms.string("temp.root")
+    fileName = cms.string("Data_305809_htmht_SiPM_forM2M3.root")
     )
 
 process.flat_step = cms.Path(process.flat)
@@ -134,9 +114,7 @@ process.flat_step = cms.Path(process.flat)
 # Schedule definition
 process.schedule = cms.Schedule(process.raw2digi_step,
                                 process.reconstruction_step,
-                                #process.dump_step,
                                 process.flat_step,
-                                #process.m2_step, process.m3_step, process.mahi_step,
                                 process.endjob_step)
 #process.FEVTDEBUGoutput_step)
 

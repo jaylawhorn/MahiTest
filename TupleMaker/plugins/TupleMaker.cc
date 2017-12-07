@@ -223,7 +223,7 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        } else if (detid.subdet() == HcalEndcap) {
 	 SamplingFactor = simParameterMap_.heParameters().samplingFactor(detid);
        }
-       if (ieta>15 && ieta<30 && iphi>62 && iphi<67 && depth==1) SamplingFactor*=1.5;
+       if (ieta>15 && ieta<30 && iphi>62 && iphi<67 && depth==1) SamplingFactor/=1.5;
        for (int j = 0; j < (int) hSimHits->size(); j++) {
 
 	 HcalDetId simId = HcalHitRelabeller::relabel((*hSimHits)[j].id(), hcons);

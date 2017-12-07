@@ -12,8 +12,8 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.categories.append('FastReport')
-process.MessageLogger.cerr.FastReport = cms.untracked.PSet( limit = cms.untracked.int32(10000000) )
+#process.MessageLogger.categories.append('FastReport')
+#process.MessageLogger.cerr.FastReport = cms.untracked.PSet( limit = cms.untracked.int32(10000000) )
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
@@ -33,7 +33,7 @@ process.source = cms.Source("PoolSource",
         # "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/02270F3A-B0CB-E711-B800-003048FF9ABC.root",
         # "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/02B2350A-B1CB-E711-9604-0025905A60D6.root",
         # "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/08F493FF-B5CB-E711-AD3B-0025905B8576.root",
-         "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/0E64333A-B6CB-E711-8C67-0CC47A4C8EB6.root",
+        #"file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/0E64333A-B6CB-E711-8C67-0CC47A4C8EB6.root",
          "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/12A31658-AECB-E711-9625-0CC47A7C3410.root",
          "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/16A56D40-AFCB-E711-868A-0CC47A4D7666.root",
          "file:/eos/cms/store/relval/CMSSW_10_0_0_pre1/RelValQCD_FlatPt_15_3000HS_13/GEN-SIM-DIGI-RAW/PU25ns_94X_mc2017_realistic_v10-v1/10000/1809A88C-AECB-E711-9C70-0CC47A78A2EC.root",
@@ -80,27 +80,15 @@ process.hcalLocalRecoSequence.remove(process.zdcreco)
 process.hcalLocalRecoSequence.remove(process.hfprereco)
 process.hcalLocalRecoSequence.remove(process.horeco)
 process.hcalLocalRecoSequence.remove(process.hfreco)
+
+process.hbheprereco.algorithm.useM2=cms.bool(True)
+process.hbheprereco.algorithm.useM3=cms.bool(True)
+process.hbheprereco.algorithm.useMahi=cms.bool(True)
+
 process.hbheprereco.processQIE11 = cms.bool(False)
 process.hbheprereco.processQIE8 = cms.bool(True)
 process.hbheprereco.digiLabelQIE8 = cms.InputTag("simHcalDigis")
 process.hbheprereco.digiLabelQIE11 = cms.InputTag("simHcalDigis")
-
-process.mahi = process.hbheprereco.clone()
-process.mahi.algorithm.useM2=cms.bool(False)
-process.mahi.algorithm.useM3=cms.bool(False)
-process.mahi.algorithm.useMahi=cms.bool(True)
-
-process.met2 = process.hbheprereco.clone()
-process.met2.algorithm.useM2=cms.bool(True)
-process.met2.algorithm.useM3=cms.bool(False)
-process.met2.algorithm.useMahi=cms.bool(False)
-
-process.met3 = process.hbheprereco.clone()
-process.met3.algorithm.useM2=cms.bool(False)
-process.met3.algorithm.useM3=cms.bool(True)
-process.met3.algorithm.useMahi=cms.bool(False)
-
-process.hbheprereco.saveInfos = cms.bool(True)
 
 process.load("RecoLocalCalo.HcalRecProducers.hbheplan1_cfi") #import hbheplan1
 
@@ -122,11 +110,6 @@ process.TFileService = cms.Service(
 
 process.flat_step = cms.Path(process.flat)
 
-process.m2_step = cms.Path(process.met2)
-process.m3_step = cms.Path(process.met3)
-process.mahi_step = cms.Path(process.mahi)
-
-
 # Schedule definition
 process.schedule = cms.Schedule(process.raw2digi_step,
                                 process.reconstruction_step,
@@ -139,7 +122,7 @@ process.schedule = cms.Schedule(process.raw2digi_step,
 #from Configuration.DataProcessing.Utils import addMonitoring
 #process = addMonitoring(process)
 
-if 'FastTimerService' in process.__dict__:
-    del process.FastTimerService
-
-process.load("HLTrigger.Timer.FastTimerService_cfi")
+#if 'FastTimerService' in process.__dict__:
+#    del process.FastTimerService
+#
+#process.load("HLTrigger.Timer.FastTimerService_cfi")
