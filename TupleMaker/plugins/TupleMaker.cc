@@ -194,7 +194,7 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      const HcalDetId detid =rh.id();
      //std::cout << rh.energy() << std::endl;
      
-     if (rh.eaux()<1) continue;
+     //if (rh.eaux()<1) continue;
 
      ieta=detid.ieta();
      iphi=detid.iphi();
@@ -308,6 +308,7 @@ TupleMaker::beginJob()
   outTree->Branch("depth",&depth,"depth/I");
 
   outTree->Branch("mahiE",&mahiE,"mahiE/D");
+  outTree->Branch("mahiT",&mahiT,"mahiT/D");
   outTree->Branch("mahiX",&mahiX,"mahiX/D");
 
   outTree->Branch("m2E",&m2E,"m2E/D");
