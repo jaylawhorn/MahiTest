@@ -29,17 +29,18 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/62439AF2-78BB-E711-8066-02163E019CC0.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/72EB8201-79BB-E711-A53A-02163E01A2F5.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7A064FEE-83BB-E711-9573-02163E013645.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7AB1CE24-87BB-E711-9544-02163E01A5E6.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/9A6CF309-84BB-E711-A738-02163E01A1EF.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/A206AA3C-85BB-E711-972C-02163E0139B8.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/BE1E948E-88BB-E711-AD99-02163E01A6F2.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/DE6CDE38-8ABB-E711-96A8-02163E01344D.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E001CFB7-88BB-E711-9408-02163E0143F6.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E444E08D-82BB-E711-83CE-02163E0146E6.root",
-        "/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E63BA5A2-82BB-E711-A248-02163E01A6E2.root"
+        "file:/eos/cms/store/user/jlawhorn/Run2017F_HTMHT_305862_1ACCE666.root"
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/62439AF2-78BB-E711-8066-02163E019CC0.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/72EB8201-79BB-E711-A53A-02163E01A2F5.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7A064FEE-83BB-E711-9573-02163E013645.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/7AB1CE24-87BB-E711-9544-02163E01A5E6.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/9A6CF309-84BB-E711-A738-02163E01A1EF.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/A206AA3C-85BB-E711-972C-02163E0139B8.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/BE1E948E-88BB-E711-AD99-02163E01A6F2.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/DE6CDE38-8ABB-E711-96A8-02163E01344D.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E001CFB7-88BB-E711-9408-02163E0143F6.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E444E08D-82BB-E711-83CE-02163E0146E6.root",
+        #"/store/data/Run2017F/HTMHT/RAW/v1/000/305/809/00000/E63BA5A2-82BB-E711-A248-02163E01A6E2.root"
         ),
                             secondaryFileNames = cms.untracked.vstring()
                             )
@@ -71,7 +72,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '92X_dataRun2_Prompt_v9', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data_promptlike', '')
 
 process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 
@@ -104,7 +105,7 @@ process.flat = cms.EDAnalyzer('TupleMaker')
 
 process.TFileService = cms.Service(
     "TFileService",
-    fileName = cms.string("Data_305809_htmht_HPD_forM2M3.root")
+    fileName = cms.string("Data_305809_htmht_HPD.root")
     )
 
 process.flat_step = cms.Path(process.flat)

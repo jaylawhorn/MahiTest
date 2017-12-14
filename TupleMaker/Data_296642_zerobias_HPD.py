@@ -61,7 +61,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '92X_dataRun2_Prompt_v9', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data_promptlike', '')
 
 process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 
