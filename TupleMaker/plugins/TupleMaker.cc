@@ -107,15 +107,15 @@ class TupleMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   double mahiX;
   double m2E;
   double m2X;
-  double m3E;
+  double m0E;
   double simE;
   double mahiSimR;
   double m2SimR;
-  double m3SimR;
+  double m0SimR;
 
   TH1D *hMahiSimR;
   TH1D *hM2SimR;
-  TH1D *hM3SimR;
+  TH1D *hM0SimR;
   TH1D *hMahiM2R;
   TH1D *hNiters;
 
@@ -202,19 +202,19 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
      mahiE=rh.energy();
      mahiT=rh.time();
-     mahiX=rh.timeFalling();
+     mahiX=rh.chi2();
 
      hNiters->Fill(int(mahiT)%1000);
 
      m2E=rh.eaux();
-     m2X=rh.chi2();
+     m2X=0;//rh.chi2();
 
-     m3E=rh.eraw();
+     m0E=rh.eraw();
 
      simE=0;
      mahiSimR=-1;
      m2SimR=-1;
-     m3SimR=-1;
+     m0SimR=-1;
 
      if (!iEvent.isRealData()) {
        double SamplingFactor = 1;
@@ -237,8 +237,8 @@ TupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 hMahiSimR->Fill(mahiSimR);
 	 m2SimR=m2E/simE;
 	 hM2SimR->Fill(m2SimR);
-	 m3SimR=m3E/simE;
-	 hM3SimR->Fill(m3SimR);
+	 m0SimR=m0E/simE;
+	 hM0SimR->Fill(m0SimR);
        }
      }
      if (m2E!=0) {
@@ -295,8 +295,8 @@ TupleMaker::beginJob()
   hMahiSimR->SetLineColor(kBlack);
   hM2SimR   = FileService->make<TH1D>("hM2SimR", "",   100, 0, 2);
   hM2SimR->SetLineColor(kBlue);
-  hM3SimR   = FileService->make<TH1D>("hM3SimR", "",   100, 0, 2);
-  hM3SimR->SetLineColor(kRed);
+  hM0SimR   = FileService->make<TH1D>("hM0SimR", "",   100, 0, 2);
+  hM0SimR->SetLineColor(kRed);
   hMahiM2R  = FileService->make<TH1D>("hMahiM2R", "",  100, 0, 2);
 
   hNiters = FileService->make<TH1D>("hNiters","", 51, 0, 510);
@@ -314,12 +314,12 @@ TupleMaker::beginJob()
   outTree->Branch("m2E",&m2E,"m2E/D");
   outTree->Branch("m2X",&m2X,"m2X/D");
 
-  outTree->Branch("m3E",&m3E,"m3E/D");
+  outTree->Branch("m0E",&m0E,"m0E/D");
 
   outTree->Branch("simE",&simE,"simE/D");
   outTree->Branch("mahiSimR",&mahiSimR,"mahiSimR/D");
   outTree->Branch("m2SimR",&m2SimR,"m2SimR/D");
-  outTree->Branch("m3SimR",&m3SimR,"m3SimR/D");
+  outTree->Branch("m0SimR",&m0SimR,"m0SimR/D");
 
 
 }
